@@ -1,0 +1,402 @@
+<h1 align="center">🤖 Telegram Bot Template</h1>
+
+Typescript-powered starter template based on [grammY](https://grammy.dev/) bot framework. Supports both polling and webhook modes.
+
+## Features
+
+- Scalable structure
+- Config loading and validation
+- Internationalization, language changing
+- Graceful shutdown
+- Logger (powered by [pino](https://github.com/pinojs/pino))
+- Ultrafast and multi-runtime server (powered by [hono](https://github.com/honojs/hono))
+- Ready-to-use deployment setups:
+    - [Docker](#docker-dockercom)
+    - [Vercel](#vercel-vercelcom)
+
+## Usage
+
+Follow these steps to set up and run your bot using this template:
+
+1. **Create a New Repository**
+
+    Start by creating a new repository using this template. You can do this by clicking [here](https://github.com/ccashwell/tg-bot-template/generate).
+
+2. **Environment Variables Setup**
+
+    Create an environment variables file by copying the provided example file:
+     ```bash
+     cp .env.example .env
+     ```
+    Open the newly created `.env` file and set the `BOT_TOKEN` environment variable.
+
+3. **Launching the Bot**
+
+    You can run your bot in both development and production modes.
+
+    **Development Mode:**
+
+    Install the required dependencies:
+    ```bash
+    npm install
+    ```
+    Run migrations:
+    ```bash
+    npx prisma migrate dev
+    ```
+    Start the bot in watch mode (auto-reload when code changes):
+    ```bash
+    npm run dev
+    ```
+
+   **Production Mode:**
+
+    Install only production dependencies:
+    ```bash
+    npm install --only=prod
+    ```
+
+    Set `DEBUG` environment variable to `false` in your `.env` file. <br />
+    Update `DATABASE_URL` with a production database.
+
+    ```dotenv
+    NODE_ENV=production
+    BOT_WEBHOOK=<server_url>/webhook
+    BOT_WEBHOOK_SECRET=<random_secret_value>
+    DATABASE_URL=<production_db_url>
+    ```
+
+    Run migrations:
+    ```bash
+    npx prisma migrate deploy
+    ```
+
+    Start the bot in production mode:
+    ```bash
+    npm run start:force # skip type checking and start
+    # or
+    npm start # with type checking (requires development dependencies)
+    ```
+
+### List of Available Commands
+
+- `npm run lint` — Lint source code.
+- `npm run format` — Format source code.
+- `npm run typecheck` — Run type checking.
+- `npm run dev` — Start the bot in development mode.
+- `npm run start` — Start the bot.
+- `npm run start:force` — Starts the bot without type checking.
+
+### Directory Structure
+
+```
+project-root/
+  ├── api # API code (for webhook support on Vercel)
+  │   └── index.ts          # Entry point for the API
+  ├── locales               # Localization files (Fluent)
+  ├── prisma # Persistence (Prisma ORM)
+  │   ├── migrations        # Migrations
+  │   └── schema.prisma     # DB schema
+  └── src
+      ├── bot # Telegram bot code
+      │   ├── callback-data # Callback data builders
+      │   ├── features      # Bot features
+      │   ├── filters       # Update filters
+      │   ├── handlers      # Update handlers
+      │   ├── helpers       # Helper functions
+      │   ├── keyboards     # Keyboard builders
+      │   ├── middlewares   # Bot middlewares
+      │   ├── context.ts    # Context object definition
+      │   ├── i18n.ts       # Internationalization setup
+      │   └── index.ts      # Main bot entry point
+      ├── server # Web server code
+      │   ├── middlewares   # Server middlewares
+      │   ├── environment   # Server environment setup
+      │   └── index.ts      # Server entry point
+      ├── config.ts # Application config
+      ├── logger.ts # Logging setup (powered by [pino](https://github.com/pinojs/pino))
+      └── main.ts   # Application entry point
+```
+
+## Deploy Options
+
+### Docker ([docker.com](https://docker.com))
+
+Branch:
+[deploy/docker-compose](https://github.com/ccashwell/tg-bot-template/tree/deploy/docker-compose)
+([open diff](https://github.com/ccashwell/tg-bot-template/compare/deploy/docker-compose))
+
+Use in your project:
+
+1. Add the template repository as a remote
+
+```sh
+git remote add template git@github.com:ccashwell/tg-bot-template.git
+git remote update
+```
+
+2. Merge deployment setup
+
+```sh
+git merge template/deploy/docker-compose -X theirs --squash --no-commit --allow-unrelated-histories
+```
+
+3. Environment Variables Setup
+
+Create an environment variables file by copying the provided example file:
+
+```sh
+# development
+cp .env.example .env.bot.dev
+
+# production
+cp .env.example .env.bot.prod
+```
+
+Open the newly created `.env.bot.dev` and `.env.bot.prod` files and set the `BOT_TOKEN` environment variable.
+
+4. Launch the bot
+
+You can run your bot in both development and production modes.
+
+Development Mode:
+
+Install the required dependencies:
+
+```sh
+npm install
+```
+
+Start the bot in watch mode (auto-reload when code changes):
+
+```sh
+docker compose up
+```
+
+Production Mode:
+
+Set `DEBUG` environment variable to `false` in your `.env` file.
+
+Start the bot in production mode:
+
+```sh
+docker compose -f compose.yml -f compose.prod.yml up
+```
+
+### Vercel ([vercel.com](https://vercel.com))
+
+Branch:
+[deploy/vercel](https://github.com/ccashwell/tg-bot-template/tree/deploy/vercel)
+([open diff](https://github.com/ccashwell/tg-bot-template/compare/deploy/vercel))
+
+Use in your project:
+
+1. Add the template repository as a remote
+
+```sh
+git remote add template git@github.com:ccashwell/tg-bot-template.git
+git remote update
+```
+
+2. Merge deployment setup
+
+```sh
+git merge template/deploy/vercel -X theirs --squash --no-commit --allow-unrelated-histories
+```
+
+3. **Environment Variables Setup**
+
+    Create an environment variables file by copying the provided example file:
+     ```bash
+     cp .env.example .env
+     ```
+    Open the newly created `.env` file and set the `BOT_TOKEN` environment variable.
+
+4. **Launching the Bot**
+
+    You can run your bot in both development and production modes.
+
+    **Development Mode:**
+
+    Install the required dependencies:
+    ```bash
+    npm install
+    ```
+    Start the bot in watch mode (auto-reload when code changes):
+    ```bash
+    npm run dev
+    ```
+
+    **Production Mode:**
+
+    Install Vercel CLI:
+    ```bash
+    npm i -g vercel
+    ```
+
+    Create a project:
+    ```bash
+    vercel link
+    ```
+
+    Set `NODEJS_HELPERS` environment variable to `0`:
+    ```bash
+    vercel env add NODEJS_HELPERS
+    ```
+
+    Set `BOT_MODE` environment variable to `webhook`:
+    ```bash
+    vercel env add BOT_MODE
+    ```
+
+    Set `BOT_TOKEN` environment variable:
+    ```bash
+    vercel env add BOT_TOKEN --sensitive
+    ```
+
+    Set `BOT_WEBHOOK_SECRET` environment variable to a random secret token:
+    ```bash
+    # Generate and set secret token using Node
+    node -e "console.log(crypto.randomBytes(256*0.75).toString('base64url'))" | vercel env add BOT_WEBHOOK_SECRET --sensitive production
+    ```
+    ```bash
+    # OR using Python
+    python3 -c "import secrets; print(secrets.token_urlsafe(256))" | vercel env add BOT_WEBHOOK_SECRET --sensitive production
+    ```
+    ```bash
+    # OR set manually:
+    vercel env add BOT_WEBHOOK_SECRET --sensitive
+    ```
+
+    Deploy your bot:
+    ```bash
+    vercel
+    ```
+
+    After successful deployment, set up a webhook to connect your Vercel app with Telegram, modify the below URL to your credentials and visit it from your browser:
+    ```
+    https://APP_NAME.vercel.app/BOT_TOKEN
+    ```
+
+## Environment Variables
+
+<table>
+<thead>
+  <tr>
+    <th>Variable</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>BOT_TOKEN</td>
+    <td>
+        String
+    </td>
+    <td>
+        Telegram Bot API token obtained from <a href="https://t.me/BotFather">@BotFather</a>.
+    </td>
+  </tr>
+  <tr>
+    <td>BOT_MODE</td>
+    <td>
+        String
+    </td>
+    <td>
+        Specifies method to receive incoming updates (<code>polling</code> or <code>webhook</code>).
+    </td>
+  </tr>
+  <tr>
+    <td>DATABASE_URL</td>
+    <td>
+        String
+    </td>
+    <td>
+        Database connection.
+    </td>
+  </tr>
+  <tr>
+    <td>LOG_LEVEL</td>
+    <td>
+        String
+    </td>
+    <td>
+        <i>Optional.</i>
+        Specifies the application log level. <br/>
+        Use <code>info</code> for general logging. Check the <a href="https://github.com/pinojs/pino/blob/master/docs/api.md#level-string">Pino documentation</a> for more log level options. <br/>
+        Defaults to <code>info</code>.
+    </td>
+  </tr>
+  <tr>
+    <td>DEBUG</td>
+    <td>Boolean</td>
+    <td>
+      <i>Optional.</i>
+      Enables debug mode. You may use <code>config.isDebug</code> flag to enable debugging functions.
+    </td>
+  </tr>
+  <tr>
+    <td>BOT_WEBHOOK</td>
+    <td>
+        String
+    </td>
+    <td>
+        <i>Optional in <code>polling</code> mode.</i>
+        Webhook endpoint URL, used to configure webhook.
+    </td>
+  </tr>
+  <tr>
+    <td>BOT_WEBHOOK_SECRET</td>
+    <td>
+        String
+    </td>
+    <td>
+        <i>Optional in <code>polling</code> mode.</i>
+        A secret token that is used to ensure that a request is sent from Telegram, used to configure webhook.
+    </td>
+  </tr>
+  <tr>
+    <td>SERVER_HOST</td>
+    <td>
+        String
+    </td>
+    <td>
+        <i>Optional in <code>polling</code> mode.</i> Specifies the server hostname. <br/>
+        Defaults to <code>0.0.0.0</code>.
+    </td>
+  </tr>
+  <tr>
+    <td>SERVER_PORT</td>
+    <td>
+        Number
+    </td>
+    <td>
+        <i>Optional in <code>polling</code> mode.</i> Specifies the server port. <br/>
+        Defaults to <code>80</code>.
+    </td>
+  </tr>
+  <tr>
+    <td>BOT_ALLOWED_UPDATES</td>
+    <td>
+        Array of String
+    </td>
+    <td>
+        <i>Optional.</i> A JSON-serialized list of the update types you want your bot to receive. See <a href="https://core.telegram.org/bots/api#update">Update</a> for a complete list of available update types. <br/>
+        Defaults to an empty array (all update types except <code>chat_member</code>, <code>message_reaction</code> and <code>message_reaction_count</code>).
+    </td>
+  </tr>
+  <tr>
+    <td>BOT_ADMINS</td>
+    <td>
+        Array of Number
+    </td>
+    <td>
+        <i>Optional.</i>
+        Administrator user IDs.
+        Use this to specify user IDs that have special privileges, such as executing <code>/setcommands</code>. <br/>
+        Defaults to an empty array.
+    </td>
+  </tr>
+</tbody>
+</table>
